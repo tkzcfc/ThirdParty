@@ -1,8 +1,6 @@
 #pragma once
 
 #include "minicoro.h"
-#include <iostream>
-#include <functional>
 #include <vector>
 
 
