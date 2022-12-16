@@ -2,7 +2,7 @@
 
 #include "minicoro.h"
 #include <vector>
-
+#include <memory>
 
 struct CoroEnv;
 class GCoroManager final
