@@ -3,6 +3,7 @@
 #include "minicoro.h"
 #include <vector>
 #include <memory>
+#include <functional>
 
 struct CoroEnv;
 class GCoroManager final

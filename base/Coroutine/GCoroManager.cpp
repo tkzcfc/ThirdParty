@@ -1,7 +1,6 @@
 #include "GCoroManager.h"
 #define MINICORO_IMPL
 #include "minicoro.h"
-#include <functional>
 #include "../GApplication.h"
 
 struct CoroEnv
