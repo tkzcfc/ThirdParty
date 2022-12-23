@@ -9,6 +9,7 @@ struct CoroEnv
     {
         this->task = task;
         this->ctx = ctx;
+        this->id = id;
     }
     std::function<void()> task;
     mco_coro* ctx;
@@ -143,6 +144,18 @@ void coro_yield()
 void coro_skill(int32_t co_id)
 {
     GApplication::getInstance()->getCoroManager().kill(co_id);
+}
+
+void coro_sleep(float second)
+{
+    if (second < 0.0f)
+        second = 0.0f;
+
+    auto start = GApplication::getInstance()->getRunTime();
+    do
+    {
+        coro_yield();
+    } while (GApplication::getInstance()->getRunTime() - start < second);
 }
 
 void coro_skill_self()

@@ -3,6 +3,7 @@
 #include "GFileSystem.h"
 #include "Utils/GStringUtils.h"
 #include "Utils/CrashReport.h"
+#include "Utils/GEnableHighPrecisionTimer.h"
 
 INITIALIZE_EASYLOGGINGPP;
 
@@ -129,8 +130,13 @@ int32_t GApplication::run(uint32_t interval)
 	LOG(INFO) << "-----------application run-----------";
 	m_isStart = true;
 	m_lastTime = 0;
-
 	m_loop = uv_loop_new();
+
+	std::unique_ptr<GEnableHighPrecisionTimer> enableHighPrecisionTimer;
+	if (interval < 1000 / 60)
+	{
+		enableHighPrecisionTimer = std::make_unique<GEnableHighPrecisionTimer>(1);
+	}
 
 	// timer
 	uv_timer_init(m_loop, &m_updateTimer);
@@ -161,9 +167,6 @@ int32_t GApplication::run(uint32_t interval)
 
 	UnSetCrashReport();
 
-//#ifdef _WIN32
-//	system("pause");
-//#endif
 	return 0;
 }
 
@@ -191,7 +194,6 @@ void GApplication::end()
 
 void GApplication::mainLoop()
 {
-	m_coroManager.update();
 	m_fpst++;
 	if (m_lastTime <= 0)
 	{
@@ -216,6 +218,7 @@ void GApplication::mainLoop()
 
 	m_scheduler->update(m_deltaTime);
 	m_serviceMgr->update(m_deltaTime);
+	m_coroManager.update();
 }
 
 

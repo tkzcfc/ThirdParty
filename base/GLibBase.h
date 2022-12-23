@@ -22,6 +22,5 @@
 
 #include "Utils/cmd.h"
 #include "Utils/GStringUtils.h"
-#include "Utils/GEnableHighPrecisionTimer.h"
 #include "Utils/GMisc.h"
 
