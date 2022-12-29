@@ -69,6 +69,14 @@ public:
     condition_.notify_one();
   }
 
+  int32_t free_count() {
+      std::unique_lock<std::mutex> lock(mutex_);
+      int32_t count = (int32_t)pool_.size();
+      lock.unlock();
+      return count;
+  }
+
+
 private:
   template <typename... Args> void init_impl(int maxsize, Args &&...args) {
     args_ = std::make_tuple(std::forward<Args>(args)...);

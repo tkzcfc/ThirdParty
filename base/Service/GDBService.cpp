@@ -49,6 +49,20 @@ uint32_t GDBService::onInit()
 		return SCODE_START_FAIL_EXIT_APP;
 	}
 
+	GApplication::getInstance()->getScheduler()->schedule([this](float) {
+		auto& pool = ormpp::connection_pool<dbng_type>::instance();
+		std::vector<std::shared_ptr<dbng_type>> connects;
+		while (pool.free_count() > 0)
+		{
+			connects.push_back(pool.get());
+		}
+		while (!connects.empty())
+		{
+			pool.return_back(connects.back());
+			connects.pop_back();
+		}
+	}, this, 10.0f, false, "db_ping");
+
 	return SCODE_START_SUCCESS;
 }
 
