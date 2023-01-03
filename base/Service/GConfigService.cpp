@@ -3,6 +3,9 @@
 #include "GApplication.h"
 #include "GFileSystem.h"
 
+#define ENABEL_PRETTY_INI 1
+#define ENABLE_VARIABLE_SUPPORT 1
+
 uint32_t GConfigService::onInit()
 {
 	auto cfgFile = GFileSystem::getExeDirectory() + "cfg/config.ini";
@@ -17,6 +20,34 @@ uint32_t GConfigService::onInit()
 	std::vector<std::string> lines;
 	StringUtils::split(cfgContent, "\n", lines);
 
+#if ENABEL_PRETTY_INI
+	for (std::size_t i = 0; i < lines.size(); ++i)
+	{
+		auto line = StringUtils::trim(lines[i]);
+
+		if (line.empty() || line[0] == ';' || line[0] == '#')
+		{
+			continue;
+		}
+		else
+		{
+			auto pos = line.find_first_of(";#");
+			if (pos != std::string::npos)
+			{
+				line = StringUtils::trim(line.substr(0, pos));
+			}
+			lines[i] = line;
+		}
+	}
+	cfgContent = "";
+	for (auto& line : lines)
+	{
+		cfgContent.append("\n");
+		cfgContent.append(line);
+	}
+#endif
+
+#if ENABLE_VARIABLE_SUPPORT
 	bool defineStart = false;
 	std::vector<std::pair<std::string, std::string>> kvp;
 	for (std::size_t i = 0; i < lines.size(); ++i)
@@ -34,6 +65,8 @@ uint32_t GConfigService::onInit()
 		{
 			line = StringUtils::trim(line.substr(0, pos));
 		}
+
+		lines[i] = line;
 
 		if (!defineStart)
 		{
@@ -68,6 +101,7 @@ uint32_t GConfigService::onInit()
 		}
 	}
 
+	// 替换定义变量
 	for (auto& kv : kvp)
 	{
 		cfgContent = StringUtils::replaceString(cfgContent, "${" + kv.first + "}", kv.second);
@@ -81,11 +115,14 @@ uint32_t GConfigService::onInit()
 		return SCODE_START_FAIL_EXIT_APP;
 	}
 
-	m_reader = std::make_unique<GINIReader>(newCfgFile);
+#endif
+	cfgFile = newCfgFile;
+
+	m_reader = std::make_unique<GINIReader>(cfgFile);
 	auto err = m_reader->ParseError();
 	if (err != 0)
 	{
-		LOG(ERROR) << "'" << newCfgFile.c_str() << "' parse error code:" << err;
+		LOG(ERROR) << "'" << cfgFile << "' parse error code:" << err;
 		return SCODE_START_FAIL_EXIT_APP;
 	}
 
@@ -94,11 +131,14 @@ uint32_t GConfigService::onInit()
 	auto it = std::find(m_reader->Sections().begin(), m_reader->Sections().end(), appName);
 	if (it == m_reader->Sections().end())
 	{
-		LOG(ERROR) << "Section '" << appName.c_str() << "' not found in '" << newCfgFile.c_str() << "'";
+		LOG(ERROR) << "Section '" << appName << "' not found in '" << cfgFile << "'";
 		return SCODE_START_FAIL_EXIT_APP;
 	}
 
+
+#if ENABLE_VARIABLE_SUPPORT
 	GFileSystem::removeFile(newCfgFile);
+#endif
 	return SCODE_START_SUCCESS;
 }
 
