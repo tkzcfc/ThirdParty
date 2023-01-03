@@ -27,7 +27,9 @@ uint32_t GDBService::onInit()
 		return SCODE_START_FAIL_EXIT_APP;
 	}
 
-	ormpp_cfg cfg{};
+	// 此处必须static,因为 connection_pool 保存的字符串参数是const char*，并没有拷贝
+	// 如果此处只是临时变量则 connection_pool 内部无法创建连接
+	static ormpp_cfg cfg{};
 	bool ret = config_manager::from_file(cfg, dbName);
 	if (!ret) {
 		LOG(ERROR) << "ormpp_cfg init failed: " << dbName;

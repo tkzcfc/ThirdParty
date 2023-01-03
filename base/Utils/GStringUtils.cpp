@@ -57,7 +57,7 @@ namespace StringUtils
 	{
 		std::string strTmp = str;
 		size_t cutAt;
-		while ((cutAt = strTmp.find_first_of(delimiter)) != strTmp.npos)
+		while ((cutAt = strTmp.find(delimiter)) != strTmp.npos)
 		{
 			if (cutAt > 0)
 			{
@@ -162,7 +162,7 @@ namespace StringUtils
 		if (pos_end == std::string::npos)
 			return str;
 
-		ret = str.substr(pos_begin, pos_end - pos_begin);
+		ret = str.substr(pos_begin, pos_end - pos_begin + 1);
 
 		return ret;
 	}
