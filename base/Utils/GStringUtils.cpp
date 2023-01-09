@@ -522,10 +522,10 @@ namespace StringUtils
 
         value = false;
 
-        if (_stricmp(p, "false") == 0)
+        if (stricmp(p, "false") == 0)
             return true;
 
-        if (_stricmp(p, "true") == 0)
+        if (stricmp(p, "true") == 0)
         {
             value = true;
             return true;
@@ -785,6 +785,20 @@ namespace StringUtils
 
     af_exit:
         return (status == 0);
+    }
+
+    int stricmp(const char* s1, const char* s2)
+    {
+        while (*s1 != 0 && *s2 != 0)
+        {
+            if (*s1 != *s2 && ::toupper(*s1) != ::toupper(*s2))
+            {
+                return -1;
+            }
+            s1++;
+            s2++;
+        }
+        return (*s1 == 0 && *s2 == 0) ? 0 : -1;
     }
 }
 

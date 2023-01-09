@@ -57,4 +57,6 @@ namespace StringUtils
 
 	bool string_to_double(const char*& p, double& value, uint32_t round_digit = 512U);
 	bool string_to_double(const char*& p, const char* pEnd, double& value, uint32_t round_digit = 512U);
+
+	int stricmp(const char* s1, const char* s2);
 }
