@@ -45,4 +45,10 @@ namespace GMisc
 		tag.append("    ");
 		return tag;
 	}
+
+	void fatal(const std::string& reason, const char* filename, int line)
+	{
+		LOG(FATAL) << "fatal error:" << reason << " , file:" << filename << " : " << line;
+		::exit(-1);
+	}
 }

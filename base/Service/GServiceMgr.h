@@ -3,6 +3,9 @@
 #include "GIService.h"
 #include <vector>
 #include <map>
+#include "Utils/typename.h"
+#include "Utils/GMisc.h"
+#include "Utils/GStringUtils.h"
 
 /// 服务管理
 class GServiceMgr
@@ -34,6 +37,10 @@ public:
 
 	template <class TService>
 	TService* getService() const;
+
+
+	template <class TService>
+	TService* mustGetService() const;
 
 	int32_t getRunningCount();
 
@@ -135,6 +142,20 @@ TService* GServiceMgr::getService() const
 	{
 		return dynamic_cast<TService*>(it->second);
 	}
+	return NULL;
+}
+
+
+template <class TService>
+TService* GServiceMgr::mustGetService() const
+{
+	auto it = m_serviceMap.find(GServiceTypeId<TService>());
+	if (it != m_serviceMap.end())
+	{
+		return dynamic_cast<TService*>(it->second);
+	}
+	
+	G_FATAL(StringUtils::format("missing service: %s", TypeNamePlaintext<TService>()));
 	return NULL;
 }
 
