@@ -34,3 +34,5 @@ void coro_yield();
 void coro_sleep(float second);
 void coro_skill(int32_t co_id);
 void coro_skill_self();
+
+#define coro_spawn(entry) GApplication::getInstance()->getCoroManager().spawn(entry)

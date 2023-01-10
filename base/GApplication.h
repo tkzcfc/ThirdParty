@@ -25,6 +25,8 @@ public:
 
 	void runWithNextFrame(const std::function<void()>& callback);
 
+	void runAsyncWork(const std::function<void()>& work, const std::function<void()>& callback = nullptr);
+
 public:
 
 	G_FORCEINLINE float getRunTime() const;

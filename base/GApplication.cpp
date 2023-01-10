@@ -237,3 +237,40 @@ void GApplication::runWithNextFrame(const std::function<void()>& callback)
 {
 	m_runWithNextFrameCalls.emplace_back(callback);
 }
+
+
+/// <summary>
+/// WorkContext
+/// </summary>
+typedef std::tuple<
+	std::function<void()>, 
+	std::function<void()>,
+	uv_work_t*> WorkContext;
+
+static void work_cb(uv_work_t* req) 
+{
+	auto data = reinterpret_cast<WorkContext*>(req->data);
+	std::get<0>(*data)();
+}
+
+static void after_work_cb(uv_work_t* req, int status) 
+{
+	auto data = reinterpret_cast<WorkContext*>(req->data);
+
+	if (auto& callback = std::get<1>(*data))
+	{
+		callback();
+	}
+
+	delete req->data;
+	delete req;
+}
+
+void GApplication::runAsyncWork(const std::function<void()>& work, const std::function<void()>& callback)
+{
+	auto work_req = new uv_work_t();
+	work_req->data = new WorkContext(work, callback, work_req);
+
+	auto r = uv_queue_work(m_loop, work_req, work_cb, after_work_cb);
+	G_ASSERT(r == 0);
+}
