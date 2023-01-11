@@ -23,6 +23,7 @@ void coro_entry(mco_coro* co)
 }
 
 
+
 GCoroManager::GCoroManager()
 {
     m_seed = 0;
@@ -82,6 +83,9 @@ void GCoroManager::update()
             }
             else
             {
+#if 0
+                // https://github.com/edubart/minicoro/issues/2
+                // minicoro cannot catch the exception thrown by the coroutine task
                 try
                 {
                     res = mco_resume(coenv->ctx);
@@ -89,13 +93,16 @@ void GCoroManager::update()
                 catch (const std::exception& e)
                 {
                     res = MCO_GENERIC_ERROR;
-                    LogError() << "mco_resume std exception:" << e.what();
+                    LogFatal() << "mco_resume std exception:" << e.what();
                 }
                 catch (...)
                 {
                     res = MCO_GENERIC_ERROR;
-                    LogError() << "mco_resume unknow exception";
+                    LogFatal() << "mco_resume unknow exception";
                 }
+#else
+                res = mco_resume(coenv->ctx);
+#endif
 
                 if (mco_status(coenv->ctx) != MCO_SUSPENDED || res != MCO_SUCCESS)
                 {
