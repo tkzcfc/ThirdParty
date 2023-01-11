@@ -1,4 +1,5 @@
-﻿#include "GFileSystem.h"
+﻿#include "../GFileSystem.h"
+#include "../../Core/GLog.h"
 
 #if G_TARGET_PLATFORM != G_PLATFORM_WIN32
 
@@ -125,7 +126,7 @@ bool GFileSystem::renameFile(const std::string &oldfullpath, const std::string &
 
 	if (0 != errorCode)
 	{
-		LOG(ERROR) << "Fail to rename file " << oldfullpath.c_str() << " to " << newfullpath.c_str() << " !Error code is " << errorCode;
+		LogError() << "Fail to rename file " << oldfullpath.c_str() << " to " << newfullpath.c_str() << " !Error code is " << errorCode;
 		return false;
 	}
 	return true;

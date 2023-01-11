@@ -34,5 +34,5 @@ void GObject::release()
 
 void GObject::printCount()
 {
-	LOG(INFO) << this << "count is " << m_count;
+	LogInfo() << this << "count is " << m_count;
 }

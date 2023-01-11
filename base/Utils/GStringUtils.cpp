@@ -1,7 +1,7 @@
 ﻿#include "GStringUtils.h"
 #include <stdarg.h>
 #include <assert.h>
-#include "GPlatformMacros.h"
+#include "../Platform/GPlatformMacros.h"
 
 namespace StringUtils
 {

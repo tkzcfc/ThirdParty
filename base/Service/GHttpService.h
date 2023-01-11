@@ -1,7 +1,7 @@
 ﻿#pragma once
 
 #include "GIService.h"
-#include "GNoticeCenter.h"
+#include "../Core/GNoticeCenter.h"
 
 // http服务
 class GHttpService final : public GIService

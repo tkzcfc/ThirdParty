@@ -1,7 +1,7 @@
 ﻿#pragma once
 
 #include "GIService.h"
-#include "GINIReader.h"
+#include "../Utils/GINIReader.h"
 
 /// 配置服务
 class GConfigService final : public GIService

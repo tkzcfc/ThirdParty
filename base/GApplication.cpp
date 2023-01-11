@@ -1,6 +1,6 @@
 ﻿#include "GApplication.h"
 #include "Utils/cmd.h"
-#include "GFileSystem.h"
+#include "Platform/GFileSystem.h"
 #include "Utils/GStringUtils.h"
 #include "Utils/CrashReport.h"
 #include "Utils/GEnableHighPrecisionTimer.h"
@@ -55,11 +55,22 @@ GApplication::GApplication(int argc, char** argv)
 	SetCrashReport(m_appName.c_str());
 
 	///////////////////////////////////// init log /////////////////////////////////////
+	// 选择划分级别的日志	
+	el::Loggers::addFlag(el::LoggingFlag::HierarchicalLogging);
+	// 启用颜色输出
+	el::Loggers::addFlag(el::LoggingFlag::ColoredTerminalOutput);
+	// 设置级别门阀值，修改参数可以控制日志输出
+	el::Loggers::setLoggingLevel(el::Level::Debug);
+
+#if G_TARGET_PLATFORM == G_PLATFORM_WIN32
 	auto logDir = StringUtils::format("log\\%s\\", m_appName.c_str());
+#else
+	auto logDir = StringUtils::format("log/%s/", m_appName.c_str());
+#endif
 	el::Configurations conf;
 	conf.setToDefault();
 	conf.setGlobally(el::ConfigurationType::Filename, logDir + "log_%datetime{%Y%M%d}.log");
-	conf.setGlobally(el::ConfigurationType::Format, "%datetime{%M-%d %H:%m:%s} [%level] %msg");
+	//conf.setGlobally(el::ConfigurationType::Format, "%datetime{%M-%d %H:%m:%s} [%level] %msg");
 	conf.setGlobally(el::ConfigurationType::Enabled, "true");
 	conf.setGlobally(el::ConfigurationType::ToFile, "true");
 	conf.setGlobally(el::ConfigurationType::MillisecondsWidth, "3");
@@ -69,7 +80,7 @@ GApplication::GApplication(int argc, char** argv)
 	conf.setGlobally(el::ConfigurationType::Format, std::string("%datetime{%Y-%M-%d %H:%m:%s,%g} %level [%logger] %msg"));
 	conf.set(el::Level::Debug, el::ConfigurationType::Format, std::string("%datetime{%Y-%M-%d %H:%m:%s,%g} %level [%logger] [%func] [%loc] %msg"));
 	// INFO and WARNING are set to default by Level::Global
-	conf.set(el::Level::Error, el::ConfigurationType::Format, std::string("%datetime{%Y-%M-%d %H:%m:%s,%g} %level [%logger] [%file]:[%line] %msg"));
+	conf.set(el::Level::Error, el::ConfigurationType::Format, std::string("%datetime{%Y-%M-%d %H:%m:%s,%g} %level [%logger] [%file]:[%loc] %msg"));
 	conf.set(el::Level::Fatal, el::ConfigurationType::Format, std::string("%datetime{%Y-%M-%d %H:%m:%s,%g} %level [%logger] [%file]:[%line] %msg"));
 	conf.set(el::Level::Verbose, el::ConfigurationType::Format, std::string("%datetime{%Y-%M-%d %H:%m:%s,%g} %level-%vlevel [%logger] %msg"));
 	conf.set(el::Level::Trace, el::ConfigurationType::Format, std::string("%datetime{%Y-%M-%d %H:%m:%s,%g} %level [%logger] [%file]:[%line] %msg"));
@@ -77,12 +88,6 @@ GApplication::GApplication(int argc, char** argv)
 
 	// 重新设置配置  
 	el::Loggers::reconfigureAllLoggers(conf);
-	// 选择划分级别的日志	
-	el::Loggers::addFlag(el::LoggingFlag::HierarchicalLogging);
-	// 启用颜色输出
-	el::Loggers::addFlag(el::LoggingFlag::ColoredTerminalOutput);
-	// 设置级别门阀值，修改参数可以控制日志输出
-	el::Loggers::setLoggingLevel(el::Level::Debug);
 
 	el::Loggers::getLogger(ELPP_DEFAULT_LOGGER);
 
@@ -96,7 +101,7 @@ GApplication::~GApplication()
 
 void GApplication::init()
 {
-	LOG(INFO) << "-----------application init-----------";
+	LogInfo() << "-----------application init-----------";
 	m_scheduler = GScheduler::getInstance();
 	m_serviceMgr = std::make_unique<GServiceMgr>();
 
@@ -127,7 +132,7 @@ void GApplication::init()
 
 int32_t GApplication::run(uint32_t interval)
 {
-	LOG(INFO) << "-----------application run-----------";
+	LogInfo() << "-----------application run-----------";
 	m_isStart = true;
 	m_lastTime = 0;
 	m_loop = uv_loop_new();
@@ -163,7 +168,7 @@ int32_t GApplication::run(uint32_t interval)
 
 	uv_loop_delete(m_loop);
 
-	LOG(INFO) << "-----------application exit-----------";
+	LogInfo() << "-----------application exit-----------";
 
 	UnSetCrashReport();
 
@@ -182,7 +187,7 @@ void GApplication::end()
 	{
 		m_serviceMgr->stopAllService([=]() 
 		{
-			LOG(INFO) << "start stop loop.";
+			LogInfo() << "start stop loop.";
 			uv_timer_stop(&m_updateTimer);
 			uv_close((uv_handle_t*)&m_updateTimer, NULL);
 			uv_timer_stop(&m_fpsTimer);

@@ -23,7 +23,7 @@ uint32_t GDBService::onInit()
 	auto dbName = ini.Get(appName, "DBService_Cfg", "");
 	if (dbName.empty())
 	{
-		LOG(ERROR) << "DBService_Cfg is empty";
+		LogError() << "DBService_Cfg is empty";
 		return SCODE_START_FAIL_EXIT_APP;
 	}
 
@@ -32,7 +32,7 @@ uint32_t GDBService::onInit()
 	static ormpp_cfg cfg{};
 	bool ret = config_manager::from_file(cfg, dbName);
 	if (!ret) {
-		LOG(ERROR) << "ormpp_cfg init failed: " << dbName;
+		LogError() << "ormpp_cfg init failed: " << dbName;
 		return SCODE_START_FAIL_EXIT_APP;
 	}
 
@@ -47,7 +47,7 @@ uint32_t GDBService::onInit()
 			cfg.db_port);
 	}
 	catch (const std::exception& e) {
-		LOG(ERROR) << "ormpp::connection_pool failed: " << e.what();
+		LogError() << "ormpp::connection_pool failed: " << e.what();
 		return SCODE_START_FAIL_EXIT_APP;
 	}
 
@@ -78,7 +78,7 @@ DbngHandle GDBService::get_dbng()
 	auto ptr = ormpp::connection_pool<dbng_type>::instance().get();
 	if (ptr == nullptr)
 	{
-		LOG(ERROR) << "No idle connection";
+		LogError() << "No idle connection";
 	}
 	return ptr;
 }

@@ -1,7 +1,7 @@
 ﻿#include "GConfigService.h"
 #include "Utils/GStringUtils.h"
 #include "GApplication.h"
-#include "GFileSystem.h"
+#include "../Platform/GFileSystem.h"
 
 #define ENABEL_PRETTY_INI 1
 #define ENABLE_VARIABLE_SUPPORT 1
@@ -13,7 +13,7 @@ uint32_t GConfigService::onInit()
 	std::string cfgContent;
 	if (!GFileSystem::readStringFromFile(cfgFile, cfgContent))
 	{
-		LOG(ERROR) << "Unable to find configuration file: " << cfgFile;
+		LogError() << "Unable to find configuration file: " << cfgFile;
 		return SCODE_START_FAIL_EXIT_APP;
 	}
 
@@ -111,7 +111,7 @@ uint32_t GConfigService::onInit()
 
 	if (!GFileSystem::writeTextFile(newCfgFile, cfgContent))
 	{
-		LOG(ERROR) << "Unable to generate temporary configuration file:: " << newCfgFile;
+		LogError() << "Unable to generate temporary configuration file:: " << newCfgFile;
 		return SCODE_START_FAIL_EXIT_APP;
 	}
 
@@ -122,7 +122,7 @@ uint32_t GConfigService::onInit()
 	auto err = m_reader->ParseError();
 	if (err != 0)
 	{
-		LOG(ERROR) << "'" << cfgFile << "' parse error code:" << err;
+		LogError() << "'" << cfgFile << "' parse error code:" << err;
 		return SCODE_START_FAIL_EXIT_APP;
 	}
 
@@ -131,7 +131,7 @@ uint32_t GConfigService::onInit()
 	auto it = std::find(m_reader->Sections().begin(), m_reader->Sections().end(), appName);
 	if (it == m_reader->Sections().end())
 	{
-		LOG(ERROR) << "Section '" << appName << "' not found in '" << cfgFile << "'";
+		LogError() << "Section '" << appName << "' not found in '" << cfgFile << "'";
 		return SCODE_START_FAIL_EXIT_APP;
 	}
 

@@ -49,7 +49,7 @@ uint32_t GSlaveNodeService::onInit()
 
 	if (m_descriptionJson.HasParseError())
 	{
-		LOG(ERROR) << "[GSlaveNodeService] json parse error : " << m_descriptionJson.GetParseError();
+		LogError() << "[GSlaveNodeService] json parse error : " << m_descriptionJson.GetParseError();
 		return SCODE_START_FAIL_EXIT_APP;
 	}
 
@@ -159,7 +159,7 @@ void GSlaveNodeService::onConnectCallback(net_uv::Client* client, net_uv::Sessio
 	// 0:failed 1:succeeded 2:timed out
 	if (status == 1)
 	{
-		LOG(INFO) << "[GSlaveNodeService] login..., GroupID: " << m_groupID;
+		LogInfo() << "[GSlaveNodeService] login..., GroupID: " << m_groupID;
 		m_msgMgr->onConnect(session->getSessionID());
 
 		auto bufLen = sizeof(NSMsg::RegServerReq) + m_description.size();
@@ -182,9 +182,9 @@ void GSlaveNodeService::onConnectCallback(net_uv::Client* client, net_uv::Sessio
 		m_isOnline = false;
 
 		if(status == 0)
-			LOG(ERROR) << "[GSlaveNodeService] connect fail, GroupID: " << m_groupID;
+			LogError() << "[GSlaveNodeService] connect fail, GroupID: " << m_groupID;
 		else
-			LOG(ERROR) << "[GSlaveNodeService] connect timeout, GroupID: " << m_groupID;
+			LogError() << "[GSlaveNodeService] connect timeout, GroupID: " << m_groupID;
 	}
 }
 
@@ -221,14 +221,14 @@ void GSlaveNodeService::onRecvMsg(uint32_t sessionID, uint32_t msgID, char* data
 		{
 			m_token = msg->token;
 			m_isOnline = true;
-			LOG(INFO) << "[GSlaveNodeService] login successful, GroupID: " << m_groupID;
+			LogInfo() << "[GSlaveNodeService] login successful, GroupID: " << m_groupID;
 		}
 		else
 		{
 			m_isOnline = false;
 			m_client->disconnect(sessionID);
 
-			LOG(ERROR) << "[GSlaveNodeService] register failed!, GroupID: " << m_groupID << ", code:" << msg->code;
+			LogError() << "[GSlaveNodeService] register failed!, GroupID: " << m_groupID << ", code:" << msg->code;
 		}
 	}break;
 	default:

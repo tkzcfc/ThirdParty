@@ -1,4 +1,5 @@
-﻿#include "GFileSystem.h"
+﻿#include "../GFileSystem.h"
+#include "../../Core/GLog.h"
 
 #if G_TARGET_PLATFORM == G_PLATFORM_WIN32
 #include <regex>
@@ -21,7 +22,7 @@ static std::wstring StringUtf8ToWideChar(const std::string& strUtf8)
 		}
 		else
 		{
-			LOG(ERROR) << "Wrong convert to WideChar code:" << GetLastError();
+			LogError() << "Wrong convert to WideChar code:" << GetLastError();
 		}
 	}
 	return ret;
@@ -45,7 +46,7 @@ static std::string StringWideCharToUtf8(const std::wstring& strWideChar)
 		}
 		else
 		{
-			LOG(ERROR) << "Wrong convert to Utf8 code:" << GetLastError();
+			LogError() << "Wrong convert to Utf8 code:" << GetLastError();
 		}
 	}
 
@@ -71,7 +72,7 @@ static std::string UTF8StringToMultiByte(const std::string& strUtf8)
 		}
 		else
 		{
-			LOG(ERROR) << "Wrong convert to Ansi code:" << GetLastError();
+			LogError() << "Wrong convert to Ansi code:" << GetLastError();
 		}
 	}
 
@@ -152,7 +153,7 @@ bool GFileSystem::createDirectory(const std::string& dirPath)
 				BOOL ret = CreateDirectoryW(subpath.c_str(), NULL);
 				if (!ret && ERROR_ALREADY_EXISTS != GetLastError())
 				{
-					LOG(ERROR) << "Fail create directory " << utf8Path.c_str() << " !Error code is " << GetLastError();
+					LogError() << "Fail create directory " << utf8Path.c_str() << " !Error code is " << GetLastError();
 					return false;
 				}
 			}
@@ -220,7 +221,7 @@ bool GFileSystem::removeFile(const std::string &filepath)
 	}
 	else
 	{
-		LOG(ERROR) << "Fail remove file " << filepath << " !Error code is " << GetLastError();
+		LogError() << "Fail remove file " << filepath << " !Error code is " << GetLastError();
 		return false;
 	}
 }
@@ -237,7 +238,7 @@ bool GFileSystem::renameFile(const std::string &oldfullpath, const std::string &
 	{
 		if (!DeleteFileW(_wNew.c_str()))
 		{
-			LOG(ERROR) << "Fail to delete file " << newfullpath << " !Error code is " << GetLastError();
+			LogError() << "Fail to delete file " << newfullpath << " !Error code is " << GetLastError();
 		}
 	}
 
@@ -247,7 +248,7 @@ bool GFileSystem::renameFile(const std::string &oldfullpath, const std::string &
 	}
 	else
 	{
-		LOG(ERROR) << "Fail to rename file " << oldfullpath << " to " << newfullpath << " !Error code is " << GetLastError();
+		LogError() << "Fail to rename file " << oldfullpath << " to " << newfullpath << " !Error code is " << GetLastError();
 		return false;
 	}
 }
@@ -304,7 +305,7 @@ uint8_t* GFileSystem::readFile(const std::string& filename, uint32_t& outSize)
 	::CloseHandle(fileHandle);
 
 	if (!successed) {
-		LOG(ERROR) << "Get data from file(" << filename << ") failed, error code is " << ::GetLastError();
+		LogError() << "Get data from file(" << filename << ") failed, error code is " << ::GetLastError();
 		free(buffer);
 		// ReadFailed
 		return NULL;

@@ -1,5 +1,5 @@
 ﻿#include "GServiceMgr.h"
-#include "GScheduler.h"
+#include "../Core/GScheduler.h"
 #include "GApplication.h"
 
 GServiceMgr::GServiceMgr()
@@ -18,7 +18,7 @@ void GServiceMgr::start()
 	for (auto& it : m_arrService)
 	{
 		it->m_status = GIService::GServiceStatus::RUNNING;
-		LOG(INFO) << "Service [" << it->serviceName() << "] started.";
+		LogInfo() << "Service [" << it->serviceName() << "] started.";
 		it->onStartService();
 	}
 
@@ -41,7 +41,7 @@ void GServiceMgr::stopAllService(const std::function<void()>& call)
 	{
 		if (getRunningCount() <= 0)
 		{
-			LOG(INFO) << "All services stopped.";
+			LogInfo() << "All services stopped.";
 			GScheduler::getInstance()->unSchedule(this, "check");
 			if (m_onStopFinishCall)
 			{

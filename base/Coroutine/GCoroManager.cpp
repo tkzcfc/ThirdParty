@@ -89,12 +89,12 @@ void GCoroManager::update()
                 catch (const std::exception& e)
                 {
                     res = MCO_GENERIC_ERROR;
-                    LOG(ERROR) << "mco_resume std exception:" << e.what();
+                    LogError() << "mco_resume std exception:" << e.what();
                 }
                 catch (...)
                 {
                     res = MCO_GENERIC_ERROR;
-                    LOG(ERROR) << "mco_resume unknow exception";
+                    LogError() << "mco_resume unknow exception";
                 }
 
                 if (mco_status(coenv->ctx) != MCO_SUSPENDED || res != MCO_SUCCESS)
@@ -137,7 +137,7 @@ void coro_yield()
     mco_result res = mco_yield(mco_running());
     if (res != MCO_SUCCESS)
     {
-        LOG(ERROR) << "mco_yield error:" << res;
+        LogError() << "mco_yield error:" << res;
     }
 }
 

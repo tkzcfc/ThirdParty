@@ -1,5 +1,5 @@
 #include "GEnableHighPrecisionTimer.h"
-#include "GPlatformMacros.h"
+#include "../Platform/GPlatformMacros.h"
 
 
 #if G_TARGET_PLATFORM == G_PLATFORM_WIN32

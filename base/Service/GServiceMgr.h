@@ -82,18 +82,18 @@ TService* GServiceMgr::addService(Types&&... args)
 
 		case SCODE_START_FAIL_EXIT_APP:
 		{
-			LOG(ERROR) << "Failed to start service [" << service->serviceName() << "], about to exit";
+			LogError() << "Failed to start service [" << service->serviceName() << "], about to exit";
 			this->setStartFail();
 		}break;
 
 		case SCODE_START_FAIL_NO_ERR:
 		{
-			LOG(WARNING) << "Failed to start service [" << service->serviceName() << "], Service configuration not enabled";
+			LogWarn() << "Failed to start service [" << service->serviceName() << "], Service configuration not enabled";
 		}break;
 
 		case SCODE_START_FAIL_RUN:
 		{
-			LOG(WARNING) << "Failed to start service [" << service->serviceName() << "]";
+			LogWarn() << "Failed to start service [" << service->serviceName() << "]";
 		}break;
 
 		default:

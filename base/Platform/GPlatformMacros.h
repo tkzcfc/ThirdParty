@@ -3,8 +3,9 @@
 #include "net_uv.h"
 #include <iostream>
 #include <assert.h>
-#include "easylogging++.h"
 #include "GPlatformConfig.h"
+#include "../Core/GLog.h"
+
 
 #define G_ASSERT(x) assert(x)
 
@@ -27,8 +28,8 @@
 #define G_FORCEINLINE inline
 #endif
 
-#define G_CHECK_NULL_RETURN(con) if(con == NULL) { LOG(ERROR) << "file:" << __FILE__ << "function:" << __FUNCTION__ << "line:" << __LINE__; return; }
-#define G_CHECK_NULL_RETURN_NULL(con) if(con == NULL) { LOG(ERROR) << "file:" << __FILE__ << "function:" << __FUNCTION__ << "line:" << __LINE__; return NULL; }
+#define G_CHECK_NULL_RETURN(con) if(con == NULL) { LogError() << "file:" << __FILE__ << "function:" << __FUNCTION__ << "line:" << __LINE__; return; }
+#define G_CHECK_NULL_RETURN_NULL(con) if(con == NULL) { LogError() << "file:" << __FILE__ << "function:" << __FUNCTION__ << "line:" << __LINE__; return NULL; }
 
 #define G_SYNTHESIZE(varType, varName, funName)\
 protected: varType varName; public: virtual inline varType get##funName(void) const { return varName; } virtual inline void set##funName(varType var){ varName = var; }

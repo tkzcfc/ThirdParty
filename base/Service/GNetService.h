@@ -1,8 +1,8 @@
 ﻿#pragma once
 
 #include "GIService.h"
-#include "GNoticeCenter.h"
-#include "GTypes.h"
+#include "../Core/GNoticeCenter.h"
+#include "../Core/GTypes.h"
 
 /// 网络服务
 class GNetService final : public GIService

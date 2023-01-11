@@ -1,7 +1,7 @@
 ﻿#pragma once
 
 #include "net_uv.h"
-#include "GScheduler.h"
+#include "Core/GScheduler.h"
 #include "Service/GServiceMgr.h"
 #include "Coroutine/GCoroManager.h"
 

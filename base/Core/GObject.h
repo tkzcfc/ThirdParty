@@ -1,7 +1,7 @@
 ﻿#ifndef GObject_hpp
 #define GObject_hpp
 
-#include "GPlatformMacros.h"
+#include "../Platform/GPlatformMacros.h"
 
 class GObject
 {

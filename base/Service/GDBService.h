@@ -78,12 +78,12 @@ static bool check_dbng_has_error(const DbngHandle& handle)
 	{
 		if (handle->has_error())
 		{
-			LOG(ERROR) << "dbng error: " << handle->get_last_error();
+			LogError() << "dbng error: " << handle->get_last_error();
 			return true;
 		}
 		return false;
 	}
-	LOG(ERROR) << "dbng error: null_ptr";
+	LogError() << "dbng error: null_ptr";
 	return true;
 }
 

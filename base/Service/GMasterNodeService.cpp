@@ -126,7 +126,7 @@ void GMasterNodeService::sendMsg(uint32_t slaveNodeID, uint32_t msgID, char* dat
 
 void GMasterNodeService::onNewConnectCallback(net_uv::Server* svr, net_uv::Session* session)
 {
-	LOG(INFO) << "new connect" << session->getSessionID();
+	LogInfo() << "new connect" << session->getSessionID();
 	m_msgMgr->onConnect(session->getSessionID());
 }
 
@@ -137,7 +137,7 @@ void GMasterNodeService::onRecvCallback(net_uv::Server* svr, net_uv::Session* se
 
 void GMasterNodeService::onDisconnectCallback(net_uv::Server* svr, net_uv::Session* session)
 {
-	LOG(INFO) << "disconnect:" << session->getSessionID();
+	LogInfo() << "disconnect:" << session->getSessionID();
 	m_msgMgr->onDisconnect(session->getSessionID());
 
 	for (auto it = m_arrSlaveNodInfos.begin(); it != m_arrSlaveNodInfos.end();)
@@ -145,7 +145,7 @@ void GMasterNodeService::onDisconnectCallback(net_uv::Server* svr, net_uv::Sessi
 		if (it->sessionId == session->getSessionID())
 		{
 			auto slaveId = it->slaveId;
-			LOG(INFO) << "SlaveNode[" << slaveId << "] off-line, GroupID: " << m_groupID << "SessionID:" << session->getSessionID();
+			LogInfo() << "SlaveNode[" << slaveId << "] off-line, GroupID: " << m_groupID << "SessionID:" << session->getSessionID();
 			it = m_arrSlaveNodInfos.erase(it);
 			m_noticeCenter->emitEvent(NSMsg::MGS_KEY_SLAVE_NODE_LEV, slaveId);
 			break;
@@ -177,7 +177,7 @@ void GMasterNodeService::onRecvMsg(uint32_t sessionID, uint32_t msgID, char* dat
 			GApplication::getInstance()->runWithNextFrame([=]() {
 				m_svr->disconnect(sessionID);
 				});
-			LOG(INFO) << "SlaveNode[" << slaveId << "] Login failed, GroupID: " << msg->groupID;
+			LogInfo() << "SlaveNode[" << slaveId << "] Login failed, GroupID: " << msg->groupID;
 			return;
 		}
 
@@ -190,7 +190,7 @@ void GMasterNodeService::onRecvMsg(uint32_t sessionID, uint32_t msgID, char* dat
 				ack.code = -2;
 				ack.token = 0;
 				m_msgMgr->sendMsg(sessionID, NSMsg::MSG_REG_SERVER_NODE_ACK, (char*)&ack, sizeof(ack));
-				LOG(ERROR) << "SlaveNode[" << slaveId << "] repeat Login";
+				LogError() << "SlaveNode[" << slaveId << "] repeat Login";
 				return;
 			}
 		}
@@ -206,7 +206,7 @@ void GMasterNodeService::onRecvMsg(uint32_t sessionID, uint32_t msgID, char* dat
 				ack.code = -3;
 				ack.token = 0;
 				m_msgMgr->sendMsg(sessionID, NSMsg::MSG_REG_SERVER_NODE_ACK, (char*)&ack, sizeof(ack));
-				LOG(ERROR) << "SlaveNode[" << slaveId << "] bad token";
+				LogError() << "SlaveNode[" << slaveId << "] bad token";
 				return;
 			}
 		}
@@ -222,7 +222,7 @@ void GMasterNodeService::onRecvMsg(uint32_t sessionID, uint32_t msgID, char* dat
 				GApplication::getInstance()->runWithNextFrame([=]() {
 					m_svr->disconnect(sessionID);
 					});
-				LOG(ERROR) << "SlaveNode[" << sessionID << "] Login failed, Insufficient server resources";
+				LogError() << "SlaveNode[" << sessionID << "] Login failed, Insufficient server resources";
 				return;
 			}
 
@@ -249,8 +249,8 @@ void GMasterNodeService::onRecvMsg(uint32_t sessionID, uint32_t msgID, char* dat
 			// 子节点异常，数量过多
 			if (m_tokenSlaveIdCacheMap.size() > 1000)
 			{
-				LOG(ERROR) << "token size: " << m_tokenSlaveIdCacheMap.size();
-				LOG(ERROR) << "Received a large number of attack messages: NSMsg::MSG_REG_SERVER_NODE_REQ";
+				LogError() << "token size: " << m_tokenSlaveIdCacheMap.size();
+				LogError() << "Received a large number of attack messages: NSMsg::MSG_REG_SERVER_NODE_REQ";
 			}
 			isFirst = true;
 		}
@@ -266,7 +266,7 @@ void GMasterNodeService::onRecvMsg(uint32_t sessionID, uint32_t msgID, char* dat
 			{
 				find = true;
 				G_ASSERT(false);
-				LOG(ERROR) << "SlaveNode[" << sessionID << "] repeat Login";
+				LogError() << "SlaveNode[" << sessionID << "] repeat Login";
 			}
 		}
 
@@ -283,8 +283,8 @@ void GMasterNodeService::onRecvMsg(uint32_t sessionID, uint32_t msgID, char* dat
 			node.infoJson.ParseStream<0>(stream);
 			if (node.infoJson.HasParseError())
 			{
-				LOG(ERROR) << "[GMasterNodeService] json parse error : " << node.infoJson.GetParseError();
-				LOG(ERROR) << "error json: " << node.info;
+				LogError() << "[GMasterNodeService] json parse error : " << node.infoJson.GetParseError();
+				LogError() << "error json: " << node.info;
 				ack.code = -5;
 				ack.token = 0;
 				if (msg->token <= 0)
@@ -299,17 +299,17 @@ void GMasterNodeService::onRecvMsg(uint32_t sessionID, uint32_t msgID, char* dat
 				if (isFirst)
 				{
 					m_noticeCenter->emitEvent(NSMsg::MGS_KEY_FIRST_REG_SLAVE_NODE, slaveId);
-					LOG(INFO) << "SlaveNode[" << sessionID << "] login successful, GroupID: " << msg->groupID;
+					LogInfo() << "SlaveNode[" << sessionID << "] login successful, GroupID: " << msg->groupID;
 				}
 				else
 				{
-					LOG(INFO) << "SlaveNode[" << sessionID << "] reconnection successful, GroupID: " << msg->groupID;
+					LogInfo() << "SlaveNode[" << sessionID << "] reconnection successful, GroupID: " << msg->groupID;
 				}
 				m_noticeCenter->emitEvent(NSMsg::MGS_KEY_SLAVE_NODE_ONLINE, slaveId);
 			}
 			else
 			{
-				LOG(INFO) << "SlaveNode[" << sessionID << "] Login failed, code: " << ack.code;
+				LogInfo() << "SlaveNode[" << sessionID << "] Login failed, code: " << ack.code;
 			}
 		}
 
@@ -326,7 +326,7 @@ void GMasterNodeService::onRecvMsg(uint32_t sessionID, uint32_t msgID, char* dat
 			}
 		}
 		m_svr->disconnect(sessionID);
-		LOG(ERROR) << "Invalid message ID received, msgID: " << msgID << ", sessionID:" << sessionID;
+		LogError() << "Invalid message ID received, msgID: " << msgID << ", sessionID:" << sessionID;
 		break;
 	}
 }

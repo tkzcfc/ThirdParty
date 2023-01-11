@@ -2,7 +2,7 @@
 #include "../Algorithm/GRandom.h"
 #include <time.h>
 #include <assert.h>
-#include "easylogging++.h"
+#include "../Core/GLog.h"
 
 namespace GMisc
 {
@@ -22,7 +22,7 @@ namespace GMisc
 		if (min > max)
 		{
 			assert(0);
-			LOG(ERROR) << "range error min:" << min << " max:" << max;
+			LogError() << "range error min:" << min << " max:" << max;
 		}
 
 		if (min == max)
@@ -48,7 +48,7 @@ namespace GMisc
 
 	void fatal(const std::string& reason, const char* filename, int line)
 	{
-		LOG(FATAL) << "fatal error:" << reason << " , file:" << filename << " : " << line;
+		LogFatal() << "fatal error:" << reason << " , file:" << filename << " : " << line;
 		::exit(-1);
 	}
 }

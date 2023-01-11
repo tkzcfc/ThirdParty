@@ -412,7 +412,7 @@ void GScheduler::unSchedule(void *pTarget, const std::string& key)
 #if OPEN_DEBUG_SCHEDULER == 1
             else
             {
-				LOG(INFO) << "unScheduleSeletorByKey : no key";
+				LogInfo() << "unScheduleSeletorByKey : no key";
             }
 #endif
         }
@@ -521,7 +521,7 @@ void GScheduler::clearOperationEntry()
         {
             removeEntryFormHash(data);
 #if OPEN_DEBUG_SCHEDULER == 1
-			LOG(INFO) << "remove running data from hash Map";
+			LogInfo() << "remove running data from hash Map";
 #endif
         }
         else
@@ -537,7 +537,7 @@ void GScheduler::clearOperationEntry()
                     itTimer = data->Timer.erase(itTimer);
 #if OPEN_DEBUG_SCHEDULER == 1
                     timerTmp->printCount();
-					LOG(INFO) << "remove timer";
+					LogInfo() << "remove timer";
 #endif
                 }
                 else
@@ -551,7 +551,7 @@ void GScheduler::clearOperationEntry()
     if(HASH_COUNT(m_operationEntry) <= 0)
         return;
 #if OPEN_DEBUG_SCHEDULER == 1
-	LOG(INFO) << "m_operationEntry hash Map count is :" << HASH_COUNT(m_operationEntry);
+	LogInfo() << "m_operationEntry hash Map count is :" << HASH_COUNT(m_operationEntry);
 #endif
     HASH_ITER(hh, m_operationEntry, data, tmp)
     {
@@ -574,7 +574,7 @@ void GScheduler::clearOperationEntry()
                     curData->Timer.push_back(timerTmp);
                     HASH_ADD_PTR(m_currentRunEntry, Target, curData);
 #if OPEN_DEBUG_SCHEDULER == 1
-					LOG(INFO) << "add new Data";
+					LogInfo() << "add new Data";
 #endif
                 }
                 itTimer++;

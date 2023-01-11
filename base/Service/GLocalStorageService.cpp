@@ -21,7 +21,7 @@ uint32_t GLocalStorageService::onInit()
 	auto dbName = ini.Get(appName, "LocalStorageDBName", "");
 	if (dbName.empty())
 	{
-		LOG(ERROR) << "dbName is empty";
+		LogError() << "dbName is empty";
 		return SCODE_START_FAIL_EXIT_APP;
 	}
 
@@ -32,7 +32,7 @@ uint32_t GLocalStorageService::onInit()
 		auto code = m_csqliter->createdb(dbName);
 		if (code != dbresulttype::successdb)
 		{
-			LOG(ERROR) << ("createdb '") << dbName << "' fail, error code:" << int32_t(code);
+			LogError() << ("createdb '") << dbName << "' fail, error code:" << int32_t(code);
 			return SCODE_START_FAIL_EXIT_APP;
 		}
 	}

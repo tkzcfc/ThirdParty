@@ -1,7 +1,7 @@
 ﻿#pragma once
 
 #include "Utils/GClassTypeId.h"
-#include "GPlatformMacros.h"
+#include "../Platform/GPlatformMacros.h"
 
 // 服务启动成功
 static const uint32_t SCODE_START_SUCCESS = 0;
@@ -97,5 +97,5 @@ detail::GTypeId GServiceTypeId()
 }
 
 #define G_DEFINE_SERVICE(SNAME) const char* serviceName() const override { return #SNAME; }
-#define G_ERROR_MISS_SERVICE(service) LOG(ERROR) << "[" << this->serviceName() << "]" << " Missing dependent service [" << #service << "]";
+#define G_ERROR_MISS_SERVICE(service) LogError() << "[" << this->serviceName() << "]" << " Missing dependent service [" << #service << "]";
 #define G_CHECK_SERVICE(service) if(m_serviceMgr->getService<service>() == NULL) { G_ERROR_MISS_SERVICE(service); return SCODE_START_FAIL_EXIT_APP; }

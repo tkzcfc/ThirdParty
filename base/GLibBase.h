@@ -1,7 +1,7 @@
 ﻿#pragma once
 
-#include "GObject.h"
-#include "GSmartPtr.h"
+#include "Core/GObject.h"
+#include "Core/GSmartPtr.h"
 #include "GApplication.h"
 #include "Service/GServiceMgr.h"
 #include "Service/GIService.h"
@@ -12,8 +12,8 @@
 #include "Service/GHttpService.h"
 #include "Service/GLocalStorageService.h"
 #include "Service/GDBService.h"
-#include "GScheduler.h"
-#include "GFileSystem.h"
+#include "Core/GScheduler.h"
+#include "Platform/GFileSystem.h"
 
 #include "Algorithm/GRandom.h"
 #include "Algorithm/base64.hpp"
