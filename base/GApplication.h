@@ -41,6 +41,8 @@ private:
 
 	void init();
 
+	void logConfiguration();
+
 	void mainLoop();
 
 	G_SYNTHESIZE_READONLY(float, m_deltaTime, DeltaTime);

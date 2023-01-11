@@ -45,51 +45,13 @@ GApplication::GApplication(int argc, char** argv)
 		}
 	}
 
-	auto cwd = cmd::try_get("cwd");
-	if (cwd.empty())
-		GFileSystem::setCwd(GFileSystem::getExeDirectory());
-	else
-		GFileSystem::setCwd(cwd);
+	GFileSystem::setCwd(cmd::try_get("cwd", GFileSystem::getExeDirectory()));
 
 	///////////////////////////////////// crash report /////////////////////////////////////
 	SetCrashReport(m_appName.c_str());
 
 	///////////////////////////////////// init log /////////////////////////////////////
-	// 选择划分级别的日志	
-	el::Loggers::addFlag(el::LoggingFlag::HierarchicalLogging);
-	// 启用颜色输出
-	el::Loggers::addFlag(el::LoggingFlag::ColoredTerminalOutput);
-	// 设置级别门阀值，修改参数可以控制日志输出
-	el::Loggers::setLoggingLevel(el::Level::Debug);
-
-#if G_TARGET_PLATFORM == G_PLATFORM_WIN32
-	auto logDir = StringUtils::format("log\\%s\\", m_appName.c_str());
-#else
-	auto logDir = StringUtils::format("log/%s/", m_appName.c_str());
-#endif
-	el::Configurations conf;
-	conf.setToDefault();
-	conf.setGlobally(el::ConfigurationType::Filename, logDir + "log_%datetime{%Y%M%d}.log");
-	//conf.setGlobally(el::ConfigurationType::Format, "%datetime{%M-%d %H:%m:%s} [%level] %msg");
-	conf.setGlobally(el::ConfigurationType::Enabled, "true");
-	conf.setGlobally(el::ConfigurationType::ToFile, "true");
-	conf.setGlobally(el::ConfigurationType::MillisecondsWidth, "3");
-	// 10MB
-	conf.setGlobally(el::ConfigurationType::MaxLogFileSize, "10485760");
-
-	conf.setGlobally(el::ConfigurationType::Format, std::string("%datetime{%Y-%M-%d %H:%m:%s,%g} %level [%logger] %msg"));
-	conf.set(el::Level::Debug, el::ConfigurationType::Format, std::string("%datetime{%Y-%M-%d %H:%m:%s,%g} %level [%logger] [%func] [%loc] %msg"));
-	// INFO and WARNING are set to default by Level::Global
-	conf.set(el::Level::Error, el::ConfigurationType::Format, std::string("%datetime{%Y-%M-%d %H:%m:%s,%g} %level [%logger] [%file]:[%loc] %msg"));
-	conf.set(el::Level::Fatal, el::ConfigurationType::Format, std::string("%datetime{%Y-%M-%d %H:%m:%s,%g} %level [%logger] [%file]:[%line] %msg"));
-	conf.set(el::Level::Verbose, el::ConfigurationType::Format, std::string("%datetime{%Y-%M-%d %H:%m:%s,%g} %level-%vlevel [%logger] %msg"));
-	conf.set(el::Level::Trace, el::ConfigurationType::Format, std::string("%datetime{%Y-%M-%d %H:%m:%s,%g} %level [%logger] [%file]:[%line] %msg"));
-
-
-	// 重新设置配置  
-	el::Loggers::reconfigureAllLoggers(conf);
-
-	el::Loggers::getLogger(ELPP_DEFAULT_LOGGER);
+	logConfiguration();
 
 	///////////////////////////////////// init /////////////////////////////////////
 	init();
@@ -97,6 +59,47 @@ GApplication::GApplication(int argc, char** argv)
 
 GApplication::~GApplication()
 {
+}
+
+void GApplication::logConfiguration()
+{
+	el::Configurations conf;
+
+	if (!conf.parseFromFile(cmd::try_get("log_conf", "easylog.conf")))
+	{
+		conf.setToDefault();
+
+		conf.setGlobally(el::ConfigurationType::Enabled, "true");
+		conf.setGlobally(el::ConfigurationType::ToFile, "true");
+		conf.setGlobally(el::ConfigurationType::MillisecondsWidth, "3");
+		// 10MB
+		conf.setGlobally(el::ConfigurationType::MaxLogFileSize, "10485760");
+
+		conf.setGlobally(el::ConfigurationType::Format, std::string("%datetime{%Y-%M-%d %H:%m:%s,%g} %levshort/%logger [%file:%line] %msg"));
+		//conf.setGlobally(el::ConfigurationType::Format, std::string("%datetime{%Y-%M-%d %H:%m:%s,%g} %levshort/%logger [%file:%line] [%func] %msg"));
+		//conf.set(el::Level::Debug,	 el::ConfigurationType::Format, std::string("%datetime{%Y-%M-%d %H:%m:%s,%g} %level [%logger] [%func] %msg"));
+		//conf.set(el::Level::Error,	 el::ConfigurationType::Format, std::string("%datetime{%Y-%M-%d %H:%m:%s,%g} %level [%logger] [%file]:[%line] [%func] %msg"));
+		//conf.set(el::Level::Fatal,	 el::ConfigurationType::Format, std::string("%datetime{%Y-%M-%d %H:%m:%s,%g} %level [%logger] [%file]:[%line] %msg"));
+		//conf.set(el::Level::Trace,	 el::ConfigurationType::Format, std::string("%datetime{%Y-%M-%d %H:%m:%s,%g} %level [%logger] [%file]:[%line] %msg"));
+	}
+
+#if G_TARGET_PLATFORM == G_PLATFORM_WIN32
+	auto logDir = StringUtils::format("log\\%s\\", m_appName.c_str());
+#else
+	auto logDir = StringUtils::format("log/%s/", m_appName.c_str());
+#endif
+	conf.setGlobally(el::ConfigurationType::Filename, logDir + "log_%datetime{%Y%M%d}.log");
+
+	// 选择划分级别的日志
+	el::Loggers::addFlag(el::LoggingFlag::HierarchicalLogging);
+	// 启用颜色输出
+	el::Loggers::addFlag(el::LoggingFlag::ColoredTerminalOutput);
+	// 设置级别门阀值，修改参数可以控制日志输出
+	el::Loggers::setLoggingLevel(el::Level::Debug);
+	// 设置为默认配置
+	el::Loggers::setDefaultConfigurations(conf, true);
+
+	el::Loggers::getLogger(ELPP_DEFAULT_LOGGER);
 }
 
 void GApplication::init()
@@ -114,7 +117,6 @@ void GApplication::init()
 		case CTRL_C_EVENT:
 		case CTRL_BREAK_EVENT:
 		{
-			//auto ret = ::MessageBox(GetConsoleWindow(), TEXT("Exit Process ?"), TEXT("Warning"), MB_YESNO);
 			auto ret = ::MessageBox(NULL, TEXT("Exit Process ?"), TEXT("Warning"), MB_YESNO);
 			if (ret == IDYES)
 			{
