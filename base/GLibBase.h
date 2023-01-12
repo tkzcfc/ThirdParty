@@ -15,10 +15,7 @@
 #include "Core/GScheduler.h"
 #include "Platform/GFileSystem.h"
 
-#include "Algorithm/GRandom.h"
-#include "Algorithm/base64.hpp"
-#include "Algorithm/crc32.hpp"
-#include "Algorithm/sha1.hpp"
+#include "Algorithm/GCrypto.h"
 
 #include "Utils/cmd.h"
 #include "Utils/GStringUtils.h"

@@ -36,6 +36,8 @@ typedef ormpp::dbng<ormpp::sqlite> dbng_type;
 typedef ormpp::dbng<ormpp::postgresql> dbng_type;
 #endif
 
+#define DBNG_ERROR INT_MIN
+
 struct DbngHandle
 {
 	DbngHandle() = delete;

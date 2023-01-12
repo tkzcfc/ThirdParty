@@ -153,16 +153,30 @@ void coro_skill(int32_t co_id)
     GApplication::getInstance()->getCoroManager().kill(co_id);
 }
 
+void coro_await(float timeout, const std::function<bool()>& condition)
+{
+    if (timeout < 0.0f)
+        timeout = 0.0f;
+
+    auto application = GApplication::getInstance();
+    auto start = application->getRunTime();
+    do
+    {
+        coro_yield();
+    } while (application->getRunTime() - start < timeout && condition());
+}
+
 void coro_sleep(float second)
 {
     if (second < 0.0f)
         second = 0.0f;
 
-    auto start = GApplication::getInstance()->getRunTime();
+    auto application = GApplication::getInstance();
+    auto start = application->getRunTime();
     do
     {
         coro_yield();
-    } while (GApplication::getInstance()->getRunTime() - start < second);
+    } while (application->getRunTime() - start < second);
 }
 
 void coro_skill_self()
