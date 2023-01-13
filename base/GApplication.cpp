@@ -140,7 +140,7 @@ int32_t GApplication::run(uint32_t interval)
 	m_loop = uv_loop_new();
 
 	std::unique_ptr<GEnableHighPrecisionTimer> enableHighPrecisionTimer;
-	if (interval < 1000 / 60)
+	//if (interval < 1000 / 60)
 	{
 		enableHighPrecisionTimer = std::make_unique<GEnableHighPrecisionTimer>(1);
 	}

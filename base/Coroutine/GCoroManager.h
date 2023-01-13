@@ -16,7 +16,7 @@ public:
 
 public:
 
-    int32_t spawn(const std::function<void()>& entry);
+    int32_t spawn(const std::function<void()>& entry, const std::function<void()>& finalization = nullptr);
 
     void update();
 
@@ -30,10 +30,10 @@ private:
     int32_t m_seed;
 };
 
-void coro_yield();
-void coro_await(float timeout, const std::function<bool()>& condition);
-void coro_sleep(float second);
+
+int32_t coro_spawn(const std::function<void()>& entry, const std::function<void()>& finalization = nullptr);
 void coro_skill(int32_t co_id);
 void coro_skill_self();
-
-#define coro_spawn(entry) GApplication::getInstance()->getCoroManager().spawn(entry)
+void coro_await(float timeout, const std::function<bool()>& condition);
+void coro_sleep(float second);
+void coro_yield();
