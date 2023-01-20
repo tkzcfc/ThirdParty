@@ -151,18 +151,24 @@ namespace StringUtils
     }
     std::string trim(const std::string& str)
     {
-        std::string ret;
-        //find the first position of not start with space or '\t'
-        std::string::size_type pos_begin = str.find_first_not_of(" \t");
-        if (pos_begin == std::string::npos)
-            return str;
+        const std::string first = " \t\r\n";
 
-        //find the last position of end with space or '\t'
-        std::string::size_type pos_end = str.find_last_not_of(" \t");
+        std::string content, ret;
+
+        for (size_t i = 0; i < str.size(); ++i)
+        {
+            if (first.find_first_of(str[i]) == std::string::npos)
+            {
+                content = str.substr(i);
+                break;
+            }
+        }
+
+        std::string::size_type pos_end = content.find_last_not_of(" \t\r\n");
         if (pos_end == std::string::npos)
-            return str;
+            return content;
 
-        ret = str.substr(pos_begin, pos_end - pos_begin + 1);
+        ret = content.substr(0, pos_end + 1);
 
         return ret;
     }
