@@ -65,7 +65,8 @@ void GApplication::logConfiguration()
 {
 	el::Configurations conf;
 
-	if (!conf.parseFromFile(cmd::try_get("log_conf", "easylog.conf")))
+	auto cfgFile = cmd::try_get("log_conf", "easylog.conf");
+	if (!GFileSystem::isFileExist(cfgFile) || !conf.parseFromFile(cfgFile))
 	{
 		conf.setToDefault();
 
