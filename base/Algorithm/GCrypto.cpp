@@ -2,6 +2,7 @@
 #include "crc32.hpp"
 #include "base64.hpp"
 #include "sha1.hpp"
+#include "md5.h"
 #include "../Platform/GPlatformMacros.h"
 
 uint32_t GCrypto::CRC32(const std::string& str)
@@ -50,3 +51,26 @@ std::string GCrypto::SHA1_from_file(const std::string& filename)
 {
 	return SHA1::from_file(filename);
 }
+
+std::string GCrypto::md5(const std::string& str)
+{
+	return md5Data((uint8_t*)str.c_str(), (int32_t)str.size());
+}
+
+std::string GCrypto::md5Data(uint8_t* data, int32_t len)
+{
+	static const unsigned int MD5_DIGEST_LENGTH = 16;
+
+	md5_state_t state;
+	md5_byte_t digest[MD5_DIGEST_LENGTH];
+	char hexOutput[(MD5_DIGEST_LENGTH << 1) + 1] = { 0 };
+
+	md5_init(&state);
+	md5_append(&state, (const md5_byte_t*)data, len);
+	md5_finish(&state, digest);
+
+	for (int di = 0; di < 16; ++di)
+		sprintf(hexOutput + di * 2, "%02x", digest[di]);
+	return hexOutput;
+}
+

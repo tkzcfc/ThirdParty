@@ -16,6 +16,10 @@ public:
 	static std::string SHA1(const std::string& str);
 
 	static std::string SHA1_from_file(const std::string& filename);
+
+	static std::string md5(const std::string& str);
+
+	static std::string md5Data(uint8_t* data, int32_t len);
 };
 
 
