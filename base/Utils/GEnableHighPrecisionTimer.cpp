@@ -13,12 +13,14 @@
 GEnableHighPrecisionTimer::GEnableHighPrecisionTimer(uint32_t uPeriod)
 {
 	m_uPeriod = uPeriod;
-	timeBeginPeriod(m_uPeriod);
+	auto result = timeBeginPeriod(m_uPeriod);
+	G_ASSERT(result == TIMERR_NOERROR);
 }
 
 GEnableHighPrecisionTimer::~GEnableHighPrecisionTimer()
 {
-	timeEndPeriod(m_uPeriod);
+	auto result = timeEndPeriod(m_uPeriod);
+	G_ASSERT(result == TIMERR_NOERROR);
 }
 
 #else
