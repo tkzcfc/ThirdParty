@@ -170,7 +170,7 @@ int32_t GApplication::run(uint32_t interval)
 	m_scheduler->unScheduleAll();
 
 	uv_loop_delete(m_loop);
-
+	uv_library_shutdown();
 	LogInfo() << "-----------application exit-----------";
 
 	UnSetCrashReport();
