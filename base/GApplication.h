@@ -33,6 +33,8 @@ public:
 
 	G_FORCEINLINE uint32_t getRunTime32() const;
 
+	G_FORCEINLINE uint64_t getRunTime64() const;
+
 	G_FORCEINLINE GServiceMgr* getServiceMgr() const;
 
 	G_FORCEINLINE const char* getAppName() const;
@@ -78,6 +80,11 @@ private:
 uint32_t GApplication::getRunTime32() const
 {
 	return (uint32_t)(uv_now(m_loop) - m_startTime);
+}
+
+uint64_t GApplication::getRunTime64() const
+{
+	return uv_now(m_loop) - m_startTime;
 }
 
 float GApplication::getRunTime() const
