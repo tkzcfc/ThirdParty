@@ -12,6 +12,8 @@ file(GLOB_RECURSE LibBase_CPP
 file(GLOB_RECURSE LibBase_CC
 	*.cc)
 
+file(GLOB_RECURSE LibBase_C
+	*.c)
 
 set(_DEP_BASE_LIB 
 	easyloggingpp
@@ -43,7 +45,7 @@ endif()
 add_definitions(-DELPP_DEFAULT_LOGGER="Base")
 
 # STATIC SHARED
-add_library(${PROJECT_NAME} STATIC ${LibBase_H} ${LibBase_HPP} ${LibBase_CPP} ${LibBase_CC})
+add_library(${PROJECT_NAME} STATIC ${LibBase_H} ${LibBase_HPP} ${LibBase_CPP} ${LibBase_CC} ${LibBase_C})
 
 target_link_libraries(
 	${PROJECT_NAME}
