@@ -44,8 +44,16 @@ endif()
 # log tag
 add_definitions(-DELPP_DEFAULT_LOGGER="Base")
 
+
+
+set(_Sources
+    ${LibBase_H} ${LibBase_HPP} ${LibBase_CPP} ${LibBase_CC} ${LibBase_C}
+)
+source_group("" FILES ${_Sources})
+source_group(TREE ${CMAKE_CURRENT_SOURCE_DIR} FILES ${_Sources})
+
 # STATIC SHARED
-add_library(${PROJECT_NAME} STATIC ${LibBase_H} ${LibBase_HPP} ${LibBase_CPP} ${LibBase_CC} ${LibBase_C})
+add_library(${PROJECT_NAME} STATIC ${_Sources})
 
 target_link_libraries(
 	${PROJECT_NAME}
