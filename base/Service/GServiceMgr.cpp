@@ -37,7 +37,7 @@ void GServiceMgr::stopAllService(const std::function<void()>& call)
 
 	m_onStopFinishCall = call;
 
-	GScheduler::getInstance()->schedule([=](float)
+	GScheduler::getInstance()->schedule([this](float)
 	{
 		if (getRunningCount() <= 0)
 		{
