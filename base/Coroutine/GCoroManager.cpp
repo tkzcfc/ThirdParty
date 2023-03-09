@@ -53,20 +53,10 @@ int32_t GCoroManager::spawn(const std::function<void()>& entry, const std::funct
     mco_result res = mco_create(&co, &desc);
     assert(res == MCO_SUCCESS);
 
-    CoroEnv* env = new CoroEnv(entry, finalization, co, m_seed++);
-    co->user_data = env;
-
-    for (auto& coenv : m_coros)
-    {
-        if (!coenv)
-        {
-            coenv.reset(env);
-            return env->id;
-        }
-    }
-    m_coros.emplace_back(env);
-
-    return env->id;
+    auto env = std::make_unique<CoroEnv>(entry, finalization, co, m_seed++);
+    co->user_data = env.get();
+    m_coros.emplace_back(std::move(env));
+    return m_seed;
 }
 
 void GCoroManager::update()
@@ -75,46 +65,68 @@ void GCoroManager::update()
         return;
 
     mco_result res;
-    for (auto& coenv : m_coros)
+
+    bool remove = false;
+    auto len = m_coros.size();
+    size_t index = 0;
+    for (index = 0; index < len; ++index)
     {
-        if (coenv)
+        if (m_coros[index]->id < 0)
         {
-            if (coenv->id < 0)
-            {
-                mco_destroy(coenv->ctx);
-                if (coenv->finalization) coenv->finalization();
-                coenv.reset();
-            }
-            else
-            {
-                // https://github.com/edubart/minicoro/issues/2
-                // minicoro cannot catch the exception thrown by the coroutine task
+            remove = true;
+        }
+        else
+        {
+            // https://github.com/edubart/minicoro/issues/2
+            // minicoro cannot catch the exception thrown by the coroutine task
 #if 0
-                try
-                {
-                    res = mco_resume(coenv->ctx);
-                }
-                catch (const std::exception& e)
-                {
-                    res = MCO_GENERIC_ERROR;
-                    LogFatal() << "mco_resume std exception:" << e.what();
-                }
-                catch (...)
-                {
-                    res = MCO_GENERIC_ERROR;
-                    LogFatal() << "mco_resume unknow exception";
-                }
+            try
+            {
+                res = mco_resume(m_coros[index]->ctx);
+            }
+            catch (const std::exception& e)
+            {
+                res = MCO_GENERIC_ERROR;
+                LogFatal() << "mco_resume std exception:" << e.what();
+            }
+            catch (...)
+            {
+                res = MCO_GENERIC_ERROR;
+                LogFatal() << "mco_resume unknow exception";
+            }
 #else
-                res = mco_resume(coenv->ctx);
+            res = mco_resume(m_coros[index]->ctx);
 #endif
 
-                if (mco_status(coenv->ctx) != MCO_SUSPENDED || res != MCO_SUCCESS)
-                {
-                    coenv->id = -1;
-                    mco_destroy(coenv->ctx);
-                    if (coenv->finalization) coenv->finalization();
-                    coenv.reset();
-                }
+            if (mco_status(m_coros[index]->ctx) != MCO_SUSPENDED || res != MCO_SUCCESS)
+            {
+                m_coros[index]->id = -1;
+                remove = true;
+            }
+        }
+    }
+
+    if (!remove)
+        return;
+
+    index = 0;
+    while (remove)
+    {
+        remove = false;
+        len = m_coros.size();
+        for (auto i = index; i < len; ++i)
+        {
+            auto& coenv = m_coros[i];
+            if (coenv->id < 0)
+            {
+                index = i;
+                mco_destroy(coenv->ctx);
+                if (coenv->finalization) coenv->finalization();
+
+                m_coros[i] = std::move(m_coros[len - 1]);
+                m_coros.pop_back();
+                remove = true;
+                break;
             }
         }
     }
@@ -124,7 +136,7 @@ void GCoroManager::kill(int32_t co_id)
 {
     for (auto& coenv : m_coros)
     {
-        if (coenv && coenv->id == co_id)
+        if (coenv->id == co_id)
         {
             coenv->id = -1;
             break;
