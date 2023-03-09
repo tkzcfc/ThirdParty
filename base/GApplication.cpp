@@ -235,9 +235,8 @@ void GApplication::updateFPS()
 	m_fps = m_fpst;
 	m_fpst = 0;
 #if G_TARGET_PLATFORM == G_PLATFORM_WIN32
-	char szTitle[64] = { 0 };
-	sprintf(szTitle, "%s(fps:%d)", m_appName.c_str(), m_fps);
-	::SetConsoleTitleA(szTitle);
+	auto title = StringUtils::format("%s%s(%d)", m_appName.c_str(), m_consoleTitle.c_str(), m_fps);
+	::SetConsoleTitleA(title.c_str());
 #endif
 }
 

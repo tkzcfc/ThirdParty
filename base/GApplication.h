@@ -54,6 +54,7 @@ private:
 	G_SYNTHESIZE_READONLY(uint64_t, m_lastTime, LastTime);
 
 	G_SYNTHESIZE_READONLY(int32_t, m_fps, FPS);
+	G_SYNTHESIZE(std::string, m_consoleTitle, ConsoleTitle);
 
 	G_SYNTHESIZE_READONLY(GScheduler*, m_scheduler, Scheduler);
 	G_SYNTHESIZE_READONLY(uv_loop_t*, m_loop, Loop);
