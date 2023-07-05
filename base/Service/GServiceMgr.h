@@ -120,7 +120,7 @@ bool GServiceMgr::removeService()
 		return false;
 	}
 
-	pService->stopService([pService]() {
+	pService->stopService([this, pService]() {
 		m_destroyService.push_back(pService);
 	});
 
